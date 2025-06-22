@@ -1,0 +1,27 @@
+#!/usr/bin/env python3
+import sys, math, re
+
+data=sys.stdin.read().strip()
+scale=0
+expr=data
+if data.startswith('scale='):
+    pre, _, rest=data.partition(';')
+    try:
+        scale=int(pre.split('=')[1])
+    except:
+        scale=0
+    expr=rest.strip()
+expr=expr.replace('^','**')
+# handle if expression
+m=re.match(r'if\s*\(([^)]*)\)\s*([^e]+?)\s*else\s*(.*)', expr)
+if m:
+    cond,a,b=m.groups()
+    expr=f'({a}) if ({cond}) else ({b})'
+try:
+    result=eval(expr, {"__builtins__":None, 'math':math})
+    if isinstance(result,float):
+        print(f"{result:.{scale}f}")
+    else:
+        print(result)
+except Exception as e:
+    print('0')
